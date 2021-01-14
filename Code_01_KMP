@@ -1,0 +1,82 @@
+#include <iostream>
+#include<vector>
+#include<algorithm>
+#include<queue>
+#include<string>
+using namespace std;
+
+class Code_01_KMP{
+public:
+    int getIndexOf(string &str1, string &str2){
+        if(str1.empty()||str2.empty()||str2.size()<1||str1.size()<str2.size())
+            return -1;
+        int * next;
+        next=getNextArray(str2);
+
+        int i1 = 0;
+        int i2 = 0;
+        while(i1<str1.size()&&i2<str2.size()){
+            //cout<<"i1:"<<i1<<" "<<"i2:"<<i2<<endl;
+            if(str1[i1]==str2[i2]){
+                i1++;
+                i2++;
+            } else if(next[i2]==-1){
+                i1++;
+//                cout<<"i1"<<i1<<endl;
+            }else{
+
+                i2 = *(next+i2);
+
+//                cout<<"i2:"<< i2<<endl;
+
+            }
+
+        }
+        if(next!=NULL){
+            delete []next;
+            next = NULL;
+        }
+        return i2 == str2.size()?i1-i2:-1;
+    }
+    int * getNextArray(string &str){
+        int * res;
+        if(str.size()==1){
+            * res = -1;
+            return res;
+        }
+        int *next=new int[str.size()];
+        next[0] = -1;                                      // "abcabcababaccc";
+        next[1] = 0;                                       //  "ababa"
+        int i = 2;//求的位置
+        int cn = 0;//当前跳到的位置
+        while(i < str.size()){
+            if(str[i-1] ==str[cn]){//如果第i个和第cn+1个能对上，那第i个next就是cn+1
+                next[i++] = ++cn;
+            }else if(cn>0){//cn如果还能往前跳，就往前跳
+                cn = next[cn];
+            }else{//cn跳到头了，那就next==0
+                next[i++] = 0;//
+            }
+        }
+//        cout<<"next:";
+//        for(int i = 0;i< str.size();i++){
+//            cout<<next[i]<<" ";
+//        }
+//        cout<<endl;
+        return next;
+    }
+
+};
+
+void test(){
+    Code_01_KMP a;
+    string str1 = "abcabcababaccc";
+    string str2 = "ababa";
+    cout<<a.getIndexOf(str1, str2);
+
+}
+
+
+int main(){
+    test();
+}
